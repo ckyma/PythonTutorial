@@ -21,3 +21,9 @@ def fib2(n): # return Fibonacci series up to n
         result.append(b)
         a, b = b, a+b
     return result
+
+# For command line execution
+
+if __name__ == "__main__":
+    import sys
+    fib(int(sys.argv[1]))

@@ -204,11 +204,44 @@ a ^ b                              # letters in a or b but not both
 # Chapter 6. Modules
 
 #%%
+# change the current working dir
+# import os
+# os.chdir("~/project-hg/python/phinarypython")
 import fibo
 fibo.fib2(100)
 fibo.__name__
 #%%
 
 ###
-# 6.1
+# 6.1. More on Modules
 ###
+#%%
+from fibo import fib
+fib(500)
+#%%
+# Reload a module after changes
+#%%
+import imp; imp.reload(fibo)
+#%%
+
+###
+# 6.1.3. “Compiled” Python files
+###
+# To speed up loading modules, not running of the program
+#%%
+# import compileall
+# compileall.compile_dir('.', force=True)
+# compileall.compile_file('fibo.py', force=True)
+#%%
+
+###
+# 6.3. The dir() Function
+###
+# The built-in function dir() is used to find out which names a module defines.
+#%%
+dir(fibo)
+#%%
+# List currently defined all types of names: variables, modules, functions, etc.
+#%%
+dir()
+#%%
