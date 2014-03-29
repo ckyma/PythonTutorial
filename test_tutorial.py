@@ -245,3 +245,77 @@ dir(fibo)
 #%%
 dir()
 #%%
+
+###############################################################################
+# Chapter 7. Input and Output
+
+###
+# 7.2.2. Saving structured data with json
+###
+#%%
+import json
+# console
+json.dumps([1, 'simple', 'list'])
+# file
+fJson = open("test.json", "r+")
+json.dump([1, 'simple', 'list'], fJson)
+x = json.load(fJson)
+x
+fJson.close()
+#%%
+
+###############################################################################
+# Chapter 8. Errors and Exceptions
+
+###
+# 8.4. Raising Exceptions
+###
+#%%
+try:
+    raise Exception('spam', 'eggs')
+except Exception as inst:
+    print(type(inst))    # the exception instance
+    print(inst.args)     # arguments stored in .args
+    print(inst)          # __str__ allows args to be printed directly,
+                         # but may be overridden in exception subclasses
+    x, y = inst.args     # unpack args
+    print('x =', x)
+    print('y =', y)
+#%%
+#%%
+raise NameError('HiThere')
+#%%
+#%%
+try:
+    raise NameError('HiThere')
+except NameError:
+    print('An exception flew by!')
+    raise
+#%%
+    
+###
+# 8.5. User-defined Exceptions
+###
+#%%
+class MyError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+try:
+    raise MyError(2*2)
+except MyError as e:
+    print('My exception occurred, value:', e.value)
+    
+raise MyError('oops!')
+#%%
+
+###
+# 8.7. Predefined Clean-up Actions
+###
+#%%
+with open("myfile.txt") as f:
+    for line in f:
+        print(line, end = "")
+#%%
