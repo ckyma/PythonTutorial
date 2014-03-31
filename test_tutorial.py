@@ -315,7 +315,122 @@ raise MyError('oops!')
 # 8.7. Predefined Clean-up Actions
 ###
 #%%
-with open("myfile.txt") as f:
+with open("test.json") as f:
     for line in f:
         print(line, end = "")
+
 #%%
+
+###############################################################################
+# Chapter 9. Classes
+
+###
+# 9.6. Private Variables
+###
+#%%
+class Mapping:
+    def __init__(self, iterable):
+        self.items_list = []
+        self.__update(iterable)
+
+    def update(self, iterable):
+        for item in iterable:
+            self.items_list.append(item)
+
+    __update = update   # private copy of original update() method
+
+class MappingSubclass(Mapping):
+
+    def update(self, keys, values):
+        # provides new signature for update()
+        # but does not break __init__()
+        for item in zip(keys, values):
+            self.items_list.append(item)
+#%%
+
+###
+# 9.8. Exceptions Are Classes Too
+###
+#%%
+class B(Exception):
+    pass
+class C(B):
+    pass
+class D(C):
+    pass
+
+for cls in [B, C, D]:
+    try:
+        raise cls()
+    except D:
+        print("D")
+    except C:
+        print("C")
+    except B:
+        print("B")
+
+for cls in [B, C, D]:
+    try:
+        raise cls()
+    except B:
+        print("B")
+    except C:
+        print("C")
+    except D:
+        print("D")
+#%%
+
+###
+# 9.9. Iterators
+###
+#%%
+for element in [1, 2, 3]:
+    print(element)
+for element in (1, 2, 3):
+    print(element)
+for key in {'one':1, 'two':2}:
+    print(key)
+for char in "123":
+    print(char)
+for line in open("test.json"):
+    print(line)
+#%%
+#%%
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+
+rev = Reverse('spam')
+iter(rev)
+for char in rev:
+    print(char)
+#%%
+
+###
+# 9.9. Generators
+###
+#%%
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+        
+for char in reverse('golf'):
+    print(char)
+#%%
+    
+###
+# 9.10. Generator Expressions
+###
+#%%
+sum(i*i for i in range(10))
+#%%
+
