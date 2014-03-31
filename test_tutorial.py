@@ -493,3 +493,61 @@ class TestStaticalFunctions(unittest.TestCase):
 unittest.main() # Calling from the command line invokes all tests
 
 #%%
+
+###############################################################################
+# Chapter 11. Brief Tour of the Standard Library - Part II
+
+###
+# 11.4. Multi-threading
+###
+#%%
+import threading, zipfile
+class AsyncZip(threading.Thread):
+    def __init__(self, infile, outfile):
+        threading.Thread.__init__(self)
+        self.infile = infile
+        self.outfile = outfile
+    def run(self):
+        f = zipfile.ZipFile(self.outfile, "w", zipfile.ZIP_DEFLATED)
+        f.write(self.infile)
+        f.close()
+        print("Finished background zip of:", self.infile)
+        
+background = AsyncZip("test.json", "test.zip")
+background.start()
+print("The main process continues to run in foreground.")
+
+background.join()   # Wait for the background task to finish
+print("Main program waited until background was done.")
+#%%
+
+###
+# 11.5. Logging
+###
+#%%
+import logging
+logging.debug("Debugging information")
+logging.warning("Warning: config file %s not found", "server.conf")
+logging.error("Error occurred")
+#%%
+
+###
+# 11.6. Weak References
+###
+#%%
+import weakref, gc
+class A:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return str(self.value)
+        
+a = A(10)
+d = weakref.WeakValueDictionary()
+d["primary"] = a
+d["primary"]
+del a
+d["primary"]
+gc.collect()
+d["primary"]
+#%%
