@@ -551,3 +551,34 @@ d["primary"]
 gc.collect()
 d["primary"]
 #%%
+
+###
+# 11.7. Tools for Working with Lists
+###
+#%%
+from heapq import heapify, heappop, heappush
+data = [1, 3, 5, 7, 9, 2, 4, 6, 8, 0]
+heapify(data)                       # rearrange the list into heap order
+data
+heappush(data, -5)                  # add a new entry
+data
+[heappop(data) for i in range(3)]   # fetch the three smallest entries
+data
+#%%
+
+###
+# 11.7. Tools for Working with Lists
+###
+#%%
+import decimal
+round(decimal.Decimal("0.70") * decimal.Decimal("1.05"), 2)
+round(.70 * 1.05, 2)
+#%%
+#%%
+sum([decimal.Decimal("0.1")] * 10) == decimal.Decimal("1.0")
+sum([.1] * 10) == 1.0
+#%%
+#%%
+decimal.getcontext().prec = 36
+decimal.Decimal("1") / decimal.Decimal("7")
+#%%
