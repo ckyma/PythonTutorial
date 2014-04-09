@@ -261,7 +261,7 @@ guess = zeros((nx, ny), float)
 sol = root(residual, guess, method='krylov', options={'disp': True})
 # sol = root(residual, guess, method='broyden2', options={'disp': True, 'max_rank': 50})
 # sol = root(residual, guess, method='anderson', options={'disp': True, 'M': 10})
-print('Residual: %g' % abs(residual(sol.x)).max())
+print('Residual: {0:g}'.format(abs(residual(sol.x)).max()))
 
 # visualize
 import matplotlib.pyplot as plt
@@ -366,3 +366,66 @@ def main():
 if __name__ == "__main__":
     main()
 #%%
+    
+###############################################################################
+# Chapter 1.9 Linear Algebra (scipy.linalg)
+
+###
+# 1.9.1 numpy.matrix vs 2D numpy.ndarray
+##
+# not recommended
+#%%
+A = np.mat([[1, 2], [3, 4]])
+A.I
+b = np.mat([5, 6])
+b.T
+A * b.T
+#%%
+# recommend
+#%%
+from scipy import linalg
+A = np.array([[1,2],[3,4]])
+linalg.inv(A)
+b = np.array([[5], [6]])
+b.T
+# element product, not matrix product
+A * b
+# matrix multiplication
+A.dot(b.T)
+#%%
+
+###
+# 1.9.2 Basic routines
+###
+# Solving linear system
+#%%
+linalg.solve(A, b)
+#%%
+# Finding Determinant
+#%%
+linalg.det(A)
+#%%
+
+###
+# 1.9.3 Decompositions
+###
+
+#Eigenvalues and eigenvectors
+#%%
+la, v = linalg.eig(A)
+la
+v
+l1,l2 = la
+v1 = np.array(v[:,0]).T
+print(linalg.norm(A.dot(v1)-l1*v1))
+#%%
+
+###############################################################################
+# 1.13 Statistics (scipy.stats)
+
+from scipy import stats
+from scipy.stats import norm
+
+###
+# 1.13.2 Random Variables
+###
