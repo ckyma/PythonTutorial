@@ -175,3 +175,194 @@ resP = sp.optimize.minimize(rosen, x0, method = "powell",
                            options = {"xtol": 1e-8, "disp": True})
 print(resP.x)
 #%%
+
+###
+# 1.5.2 Constrained minimization of multivariate scalar functions (minimize)
+###
+#%%
+def func(x, sign=1.0):
+    """ Objective function """
+    return sign*(2*x[0]*x[1] + 2*x[0] - x[0]**2 - 2*x[1]**2)
+def func_deriv(x, sign=1.0):
+    """ Derivative of objective function """
+    dfdx0 = sign*(-2*x[0] + 2*x[1] + 2)
+    dfdx1 = sign*(2*x[0] - 4*x[1])
+    return np.array([ dfdx0, dfdx1 ])
+cons = ({'type': 'eq',
+         'fun' : lambda x: np.array([x[0]**3 - x[1]]),
+        'jac' : lambda x: np.array([3.0*(x[0]**2.0), -1.0])},
+        {'type': 'ineq',
+         'fun' : lambda x: np.array([x[1] - 1]),
+        'jac' : lambda x: np.array([0.0, 1.0])})
+res = sp.optimize.minimize(func, [-1.0,1.0], args=(-1.0,), jac=func_deriv,
+                           constraints=cons, method='SLSQP', options={'disp': True})
+print(res.x)
+#%%
+
+###
+# 1.5.3 Least-square fitting (leastsq)
+###
+#%%
+x = np.arange(0,6e-2,6e-2/30)
+A,k,theta = 10, 1.0/3e-2, np.pi/6
+y_true = A*np.sin(2*np.pi*k*x+theta)
+y_meas = y_true + 2*np.random.randn(len(x))
+
+def residuals(p, y, x):
+    A,k,theta = p
+    err = y-A*np.sin(2*np.pi*k*x+theta)
+    return err
+def peval(x, p):
+    return p[0]*np.sin(2*np.pi*p[1]*x+p[2])
+p0 = [8, 1/2.3e-2, np.pi/3]
+print(np.array(p0))
+plsq = sp.optimize.leastsq(residuals, p0, args=(y_meas, x))
+plsq
+print(plsq[0])
+print(np.array([A, k, theta]))
+
+import matplotlib.pyplot as plt
+plt.plot(x,peval(x,plsq[0]),x,y_meas,'o',x,y_true)
+plt.title('Least-squares fit to noisy data')
+plt.legend(['Fit', 'Noisy', 'True'])
+plt.show()
+#%%
+
+###
+# 1.5.5 Root finding
+###
+#%%
+from scipy.optimize import root
+from numpy import cosh, zeros_like, mgrid, zeros
+
+# parameters
+nx, ny = 75, 75
+hx, hy = 1./(nx-1), 1./(ny-1)
+
+P_left, P_right = 0, 0
+P_top, P_bottom = 1, 0
+
+def residual(P):
+   d2x = zeros_like(P)
+   d2y = zeros_like(P)
+
+   d2x[1:-1] = (P[2:]   - 2*P[1:-1] + P[:-2]) / hx/hx
+   d2x[0]    = (P[1]    - 2*P[0]    + P_left)/hx/hx
+   d2x[-1]   = (P_right - 2*P[-1]   + P[-2])/hx/hx
+
+   d2y[:,1:-1] = (P[:,2:] - 2*P[:,1:-1] + P[:,:-2])/hy/hy
+   d2y[:,0]    = (P[:,1]  - 2*P[:,0]    + P_bottom)/hy/hy
+   d2y[:,-1]   = (P_top   - 2*P[:,-1]   + P[:,-2])/hy/hy
+
+   return d2x + d2y + 5*cosh(P).mean()**2
+
+# solve
+guess = zeros((nx, ny), float)
+sol = root(residual, guess, method='krylov', options={'disp': True})
+# sol = root(residual, guess, method='broyden2', options={'disp': True, 'max_rank': 50})
+# sol = root(residual, guess, method='anderson', options={'disp': True, 'M': 10})
+print('Residual: %g' % abs(residual(sol.x)).max())
+
+# visualize
+import matplotlib.pyplot as plt
+x, y = mgrid[0:1:(nx*1j), 0:1:(ny*1j)]
+plt.pcolor(x, y, sol.x)
+plt.colorbar()
+plt.show()
+#%%
+
+## Precondition to accelerate
+#%%
+from scipy.optimize import root
+from scipy.sparse import spdiags, kron
+from scipy.sparse.linalg import spilu, LinearOperator
+from numpy import cosh, zeros_like, mgrid, zeros, eye
+
+# parameters
+nx, ny = 75, 75
+hx, hy = 1./(nx-1), 1./(ny-1)
+
+P_left, P_right = 0, 0
+P_top, P_bottom = 1, 0
+
+def get_preconditioner():
+    """Compute the preconditioner M"""
+    diags_x = zeros((3, nx))
+    diags_x[0,:] = 1/hx/hx
+    diags_x[1,:] = -2/hx/hx
+    diags_x[2,:] = 1/hx/hx
+    Lx = spdiags(diags_x, [-1,0,1], nx, nx)
+
+    diags_y = zeros((3, ny))
+    diags_y[0,:] = 1/hy/hy
+    diags_y[1,:] = -2/hy/hy
+    diags_y[2,:] = 1/hy/hy
+    Ly = spdiags(diags_y, [-1,0,1], ny, ny)
+
+    J1 = kron(Lx, eye(ny)) + kron(eye(nx), Ly)
+
+    # Now we have the matrix `J_1`. We need to find its inverse `M` --
+    # however, since an approximate inverse is enough, we can use
+    # the *incomplete LU* decomposition
+
+    J1_ilu = spilu(J1)
+
+    # This returns an object with a method .solve() that evaluates
+    # the corresponding matrix-vector product. We need to wrap it into
+    # a LinearOperator before it can be passed to the Krylov methods:
+
+    M = LinearOperator(shape=(nx*ny, nx*ny), matvec=J1_ilu.solve)
+    return M
+
+def solve(preconditioning=True):
+    """Compute the solution"""
+    count = [0]
+
+    def residual(P):
+        count[0] += 1
+
+        d2x = zeros_like(P)
+        d2y = zeros_like(P)
+
+        d2x[1:-1] = (P[2:]   - 2*P[1:-1] + P[:-2])/hx/hx
+        d2x[0]    = (P[1]    - 2*P[0]    + P_left)/hx/hx
+        d2x[-1]   = (P_right - 2*P[-1]   + P[-2])/hx/hx
+
+        d2y[:,1:-1] = (P[:,2:] - 2*P[:,1:-1] + P[:,:-2])/hy/hy
+        d2y[:,0]    = (P[:,1]  - 2*P[:,0]    + P_bottom)/hy/hy
+        d2y[:,-1]   = (P_top   - 2*P[:,-1]   + P[:,-2])/hy/hy
+
+        return d2x + d2y + 5*cosh(P).mean()**2
+
+    # preconditioner
+    if preconditioning:
+        M = get_preconditioner()
+    else:
+        M = None
+
+    # solve
+    guess = zeros((nx, ny), float)
+
+    sol = root(residual, guess, method='krylov',
+               options={'disp': True,
+                        'jac_options': {'inner_M': M}})
+    print ('Residual', abs(residual(sol.x)).max())
+    print ('Evaluations', count[0])
+
+    return sol.x
+
+def main():
+    sol = solve(preconditioning=True)
+
+    # visualize
+    import matplotlib.pyplot as plt
+    x, y = mgrid[0:1:(nx*1j), 0:1:(ny*1j)]
+    plt.clf()
+    plt.pcolor(x, y, sol)
+    plt.clim(0, 1)
+    plt.colorbar()
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+#%%
