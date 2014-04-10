@@ -429,3 +429,14 @@ from scipy.stats import norm
 ###
 # 1.13.2 Random Variables
 ###
+#%%
+norm.cdf([-1., 0, 1])
+stats.gamma(a=1, scale=2.).stats(moments="mv")
+#%%
+
+###############################################################################
+# 1.16 Weave (scipy.weave)
+
+# Only works in Python 2.7
+from scipy import weave
+

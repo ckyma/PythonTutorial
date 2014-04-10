@@ -165,11 +165,27 @@ np.nansum(myarr)
 ###
 # 5.2.4 weave
 ###
+# Only works under python 2.7
 #%%
 a = np.arange(1000)
 b = np.arange(1000)
 c = np.arange(1000)
-d = 4*a + 5*a*b + 6*b*c
-# d = np.empty(a.shape, "d")
-# sp.weave.blitz("4*a + 5*a*b + 6*b*c")
+# d = 4*a + 5*a*b + 6*b*c
+d = np.empty(a.shape, "d")
+sp.weave.blitz("d = 4*a + 5*a*b + 6*b*c")
+#%%
+# inline C-code
+#%%
+code = r"""
+int i;
+py::tuple results(2);
+for (i=0; i<a.length(); i++) {
+    a[i] = i;
+}
+results[0] = 3.0;
+results[1] = 4.0;
+return_val = results;
+"""
+a = [None]*10
+res = weave.inline(code, ["a"])
 #%%
