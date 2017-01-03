@@ -2,8 +2,37 @@
 """
 Created on Fri Mar 28 13:28:14 2014
 
-@author: phinary0
+@author: ckyma
 """
+
+#%%
+###############################################################################
+# Chapter 1. Whetting Your Appetite
+
+# 1. Python allows you to split your program into modules that can be reused in other Python programs.
+# 2. You can link the Python interpreter into an application written in C and use it as an extension or command language for that application.
+
+#%%
+###############################################################################
+# Chapter 2. Using the Python Interpreter
+
+# the script name and additional arguments thereafter are turned into a list of strings and assigned to the argv variable in the sys module.
+# You can access this list by executing import sys. 
+# The length of the list is at least one; when no script and no arguments are given, sys.argv[0] is an empty string. 
+# When the script name is given as '-' (meaning standard input), sys.argv[0] is set to '-'. 
+# When -c command is used, sys.argv[0] is set to '-c'. 
+# When -m module is used, sys.argv[0] is set to the full name of the located module. 
+# Options found after -c command or -m module are not consumed by the Python interpreter’s option processing but left in sys.argv for the command or module to handle.
+
+#%%
+###############################################################################
+# Chapter 3. An Informal Introduction to Python
+
+# Comments in Python start with the hash character, #, and extend to the end of the physical line. 
+# A comment may appear at the start of a line or following whitespace or code, but not within a string literal. 
+# A hash character within a string literal is just a hash character.
+
+#%%
 ###############################################################################
 # Chapter 4. More Control Flow Tools
 
