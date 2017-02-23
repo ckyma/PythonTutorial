@@ -32,6 +32,50 @@ Created on Fri Mar 28 13:28:14 2014
 # A comment may appear at the start of a line or following whitespace or code, but not within a string literal. 
 # A hash character within a string literal is just a hash character.
 
+###
+# 3.1 Using Python as a Calculator
+###
+
+###
+# 3.1.1 Numbers
+###
+
+#%%
+
+16 / 2 # Division always retuens a float, i.e., 8.0
+
+16 // 3 # get floor, i.e., 5
+16 % 3 # get remainder, i.e., 1
+
+2 ** 7 # 2 to the power of 7, i.e., 128
+
+# In interactive mode ONLY, the last printed expression is assigned to the variable _
+tax = 12.5 / 100
+price = 100.5
+price * tax
+# price + _ # 113.0625
+# round(_, 2) # 113.06
+
+complexNum = 3+5j # complex type number
+
+#%%
+
+###
+# 3.1.2 Strings
+###
+
+#%%
+
+s = '"First" line.\nSecond line.'
+s # Still \n in output
+print(s) # Formatted output
+
+print(r'c:\name')
+
+
+
+#%%
+
 #%%
 ###############################################################################
 # Chapter 4. More Control Flow Tools
