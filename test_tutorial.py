@@ -63,7 +63,6 @@ complexNum = 3+5j # complex type number
 ###
 # 3.1.2 Strings
 ###
-
 #%%
 
 s = '"First" line.\nSecond line.'
@@ -72,6 +71,21 @@ print(s) # Formatted output
 
 print(r'c:\name')
 
+
+
+#%%
+
+###
+# 3.1.3 Lists
+###
+#%%
+
+# List supports concatenation
+[1, 2] + [3, 4]
+
+# Nested / Multidimensional list
+multiList = [[11, 12], [21, 22]]
+multiList[0][0]
 
 
 #%%
