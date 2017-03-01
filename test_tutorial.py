@@ -95,6 +95,57 @@ multiList[0][0]
 # Chapter 4. More Control Flow Tools
 
 ###
+# 4.1 if Statements
+###
+
+x = int(input("Please enter an interger: "))
+
+if x < 0:
+    x = 0
+    print('Negative changed to zero')
+elif x == 0:
+    print('Zero')
+else:
+    print('More')
+
+###
+# 4.2 for Statements
+###
+
+words = ['ab', 'cd', 'efg']
+
+# Make a copy of the list using ':' when loop and modify the list
+for w in words[:]:
+    if len(w) > 2:
+        words.insert(0, w)
+
+print(words)
+
+###
+# 4.3 The range() Function
+###
+
+for i in range(len(words)):
+    print(i, words[i])
+
+print(list(range(10)))
+    
+###
+# 4.6 Defining Functions
+###
+
+def fib(n):
+    """Print a Fibonacci series up to n."""
+    a, b = 0, 1
+    while a < n:
+        print(a, end=' ')
+        a, b = b, a + b
+    print()
+
+fib(2000)
+fib
+
+###
 # 4.7.1. Default Argument Values
 ###
 
